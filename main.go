@@ -194,7 +194,7 @@ func main() {
 		for {
 			logger.Verbosef("Setting up Wireguard on Docker Desktop VM\n")
 
-			err = setupVm(ctx, cli, port, hostPeerIp, vmPeerIp, hostPrivateKey, vmPrivateKey)
+			err = setupVm(ctx, logger, cli, port, hostPeerIp, vmPeerIp, hostPrivateKey, vmPrivateKey)
 			if err != nil {
 				logger.Errorf("Failed to setup VM: %v", err)
 				time.Sleep(5 * time.Second)
@@ -279,6 +279,7 @@ func main() {
 
 func setupVm(
 	ctx context.Context,
+	logger *device.Logger,
 	dockerCli *client.Client,
 	serverPort int,
 	hostPeerIp string,
@@ -287,6 +288,7 @@ func setupVm(
 	vmPrivateKey wgtypes.Key,
 ) error {
 	imageName := fmt.Sprintf("%s:%s", version.SetupImage, version.Version)
+	logger.Verbosef("Setting up VM with image %s", imageName)
 
 	_, _, err := dockerCli.ImageInspectWithRaw(ctx, imageName)
 	if err != nil {
